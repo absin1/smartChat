@@ -1,6 +1,7 @@
 package talentify.ai.api.examples.web;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -12,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import ai.api.AIServiceException;
 import ai.api.model.AIResponse;
@@ -41,14 +44,20 @@ public class SimpleChatServlet extends AIServiceServlet {
 		}
 		try {
 			AIResponse aiResponse = request(request.getParameter("query"), session);
-
-			response.setContentType("text/plain");
+			JsonArray buttons = new JsonArray();
+			response.setContentType("application/json");
 			String speech = aiResponse.getResult().getFulfillment().getSpeech();
 			if (aiResponse.getResult().getMetadata().getIntentName().equalsIgnoreCase("talentify.agent.task")) {
+				buttons = new TalentifyTask().getTaskButtons(istarUserID);
 				String taskExtraShort = new TalentifyTask().getTaskExtraShort(istarUserID);
-				speech += "\n" + taskExtraShort;
+				speech += ". " + taskExtraShort;
 			}
-			response.getWriter().append(speech);
+			JsonObject talentifyResponse = new JsonObject();
+			talentifyResponse.addProperty("speech", speech);
+			talentifyResponse.add("buttons", buttons);
+			PrintWriter out = response.getWriter();
+			out.print(talentifyResponse);
+			out.flush();
 		} catch (AIServiceException e) {
 			e.printStackTrace();
 		}

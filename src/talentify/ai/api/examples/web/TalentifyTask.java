@@ -97,25 +97,34 @@ public class TalentifyTask {
 			return "NPE";
 		}
 		JsonArray tasks = getTasks(istarUserID);
-		String taskExtraShort = "You have a total of " + tasks.size() + " tasks.\n";
+		String taskExtraShort = "You have a total of " + tasks.size() + " tasks.";
+		return taskExtraShort;
+	}
+
+	public JsonArray getTaskButtons(String istarUserID) throws IOException {
+		JsonArray buttons = new JsonArray();
+		JsonArray tasks = getTasks(istarUserID);
 		for (JsonElement taskJsonObject : tasks) {
 			JsonObject asJsonObject = taskJsonObject.getAsJsonObject();
+			JsonObject button = new JsonObject();
 			switch (asJsonObject.get("itemType").getAsString()) {
 			case "LESSON_PRESENTATION":
-				taskExtraShort += "A presentation titled ";
+				button.addProperty("displayText", "Presentation: " + asJsonObject.get("title").getAsString());
 				break;
 			case "LESSON_ASSESSMENT":
-				taskExtraShort += "An assessment titled ";
+				button.addProperty("displayText", "Assessment: " + asJsonObject.get("title").getAsString());
 				break;
 			case "LESSON_INTERACTIVE":
-				taskExtraShort += "An interactive lesson titled ";
+				button.addProperty("displayText", "Interactive Lesson: " + asJsonObject.get("title").getAsString());
 				break;
-
 			default:
 				break;
 			}
-			taskExtraShort += asJsonObject.get("title").getAsString() + ".\n";
+			button.addProperty("action", "openTask");
+			button.addProperty("itemID", asJsonObject.get("itemId").getAsString());
+			button.addProperty("taskID", asJsonObject.get("id").getAsString());
+			buttons.add(button);
 		}
-		return taskExtraShort;
+		return buttons;
 	}
 }
