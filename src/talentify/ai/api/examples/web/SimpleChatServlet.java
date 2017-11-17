@@ -47,10 +47,12 @@ public class SimpleChatServlet extends AIServiceServlet {
 			JsonArray buttons = new JsonArray();
 			response.setContentType("application/json");
 			String speech = aiResponse.getResult().getFulfillment().getSpeech();
+			System.err.println("sessionId >> " + aiResponse.getSessionId());
+			System.err.println("id >> " + aiResponse.getId());
 			if (aiResponse.getResult().getMetadata().getIntentName().equalsIgnoreCase("talentify.agent.task")) {
 				buttons = new TalentifyTask().getTaskButtons(istarUserID);
-				String taskExtraShort = new TalentifyTask().getTaskExtraShort(istarUserID);
-				speech += ". " + taskExtraShort;
+				//String taskExtraShort = new TalentifyTask().getTaskExtraShort(istarUserID);
+				//speech += ". " + taskExtraShort;
 			}
 			JsonObject talentifyResponse = new JsonObject();
 			talentifyResponse.addProperty("speech", speech);

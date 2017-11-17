@@ -39,7 +39,7 @@ public class TalentifyTask {
 	}
 
 	public JsonArray getTasks(String istarUserID) throws IOException {
-		String url = "http://talentify.in/t2c/user/" + istarUserID + "/complex";
+		String url = "http://business.talentify.in/t2c/user/" + istarUserID + "/complex";
 		// String json = getJSON(url, 5);
 		System.err.println(url);
 		String json = new Utils().getHTTP(url);
@@ -109,21 +109,33 @@ public class TalentifyTask {
 			JsonObject button = new JsonObject();
 			switch (asJsonObject.get("itemType").getAsString()) {
 			case "LESSON_PRESENTATION":
-				button.addProperty("displayText", "Presentation: " + asJsonObject.get("title").getAsString());
+				button.addProperty("displayText", asJsonObject.get("title").getAsString());
+				button.addProperty("action", "openTask");
+				button.addProperty("itemID", asJsonObject.get("itemId").getAsString());
+				button.addProperty("taskID", asJsonObject.get("id").getAsString());
+				button.addProperty("itemType", asJsonObject.get("itemType").getAsString());
+				buttons.add(button);
 				break;
+			case "ASSESSMENT":
 			case "LESSON_ASSESSMENT":
-				button.addProperty("displayText", "Assessment: " + asJsonObject.get("title").getAsString());
+				button.addProperty("displayText", asJsonObject.get("title").getAsString());
+				button.addProperty("action", "openTask");
+				button.addProperty("itemID", asJsonObject.get("itemId").getAsString());
+				button.addProperty("taskID", asJsonObject.get("id").getAsString());
+				button.addProperty("itemType", asJsonObject.get("itemType").getAsString());
+				buttons.add(button);
 				break;
 			case "LESSON_INTERACTIVE":
-				button.addProperty("displayText", "Interactive Lesson: " + asJsonObject.get("title").getAsString());
+				button.addProperty("displayText", asJsonObject.get("title").getAsString());
+				button.addProperty("action", "openTask");
+				button.addProperty("itemID", asJsonObject.get("itemId").getAsString());
+				button.addProperty("taskID", asJsonObject.get("id").getAsString());
+				button.addProperty("itemType", asJsonObject.get("itemType").getAsString());
+				buttons.add(button);
 				break;
 			default:
 				break;
 			}
-			button.addProperty("action", "openTask");
-			button.addProperty("itemID", asJsonObject.get("itemId").getAsString());
-			button.addProperty("taskID", asJsonObject.get("id").getAsString());
-			buttons.add(button);
 		}
 		return buttons;
 	}
