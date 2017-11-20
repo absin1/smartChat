@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONException;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -47,12 +49,31 @@ public class SimpleChatServlet extends AIServiceServlet {
 			JsonArray buttons = new JsonArray();
 			response.setContentType("application/json");
 			String speech = aiResponse.getResult().getFulfillment().getSpeech();
+			String resolvedQuery = aiResponse.getResult().getResolvedQuery();
+			String intentName = aiResponse.getResult().getMetadata().getIntentName();
 			System.err.println("sessionId >> " + aiResponse.getSessionId());
 			System.err.println("id >> " + aiResponse.getId());
-			if (aiResponse.getResult().getMetadata().getIntentName().equalsIgnoreCase("talentify.agent.task")) {
+			System.err.println("resolvedQuery >> " + resolvedQuery);
+			System.err.println("intentName >> " + intentName);
+			System.err.println("speech >> " + speech);
+			if (intentName.equalsIgnoreCase("talentify.agent.task")) {
 				buttons = new TalentifyTask().getTaskButtons(istarUserID);
-				//String taskExtraShort = new TalentifyTask().getTaskExtraShort(istarUserID);
-				//speech += ". " + taskExtraShort;
+				// String taskExtraShort = new TalentifyTask().getTaskExtraShort(istarUserID);
+				// speech += ". " + taskExtraShort;
+			} else if (intentName.equalsIgnoreCase("fallback")) {
+				try {
+					resolvedQuery = resolvedQuery.trim().replaceAll(" ", "+");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				ApiAIResponse search = getOntologicalResponse(resolvedQuery);
+				/*
+				 * String googleResponse = new Utils().stringify(search);
+				 * System.err.println(googleResponse);
+				 */
+				speech += search.speech;
+			} else {
+				System.out.println("Intent with no action > " + speech);
 			}
 			JsonObject talentifyResponse = new JsonObject();
 			talentifyResponse.addProperty("speech", speech);
@@ -60,9 +81,25 @@ public class SimpleChatServlet extends AIServiceServlet {
 			PrintWriter out = response.getWriter();
 			out.print(talentifyResponse);
 			out.flush();
-		} catch (AIServiceException e) {
+		} catch (
+
+				AIServiceException | JSONException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private ApiAIResponse getOntologicalResponse(String resolvedQuery) throws IOException, JSONException {
+		ApiAIResponse search = new Google().search(resolvedQuery);
+		if (search == null) {
+			search = new DuckDuckGo().searchApache(resolvedQuery);
+		}
+		if (search == null) {
+			search = new Bing().search(resolvedQuery);
+		}
+		if (search == null) {
+			search = new Yahoo().search(resolvedQuery);
+		}
+		return search;
 	}
 
 	public String stringify(AIResponse aiResponse) {

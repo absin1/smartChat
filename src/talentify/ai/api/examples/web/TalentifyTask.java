@@ -133,6 +133,14 @@ public class TalentifyTask {
 				button.addProperty("itemType", asJsonObject.get("itemType").getAsString());
 				buttons.add(button);
 				break;
+			case "LESSON_VIDEO":
+				button.addProperty("displayText", asJsonObject.get("title").getAsString());
+				button.addProperty("action", "openTask");
+				button.addProperty("itemID", asJsonObject.get("itemId").getAsString());
+				button.addProperty("taskID", asJsonObject.get("id").getAsString());
+				button.addProperty("itemType", asJsonObject.get("itemType").getAsString());
+				buttons.add(button);
+				break;
 			default:
 				break;
 			}
