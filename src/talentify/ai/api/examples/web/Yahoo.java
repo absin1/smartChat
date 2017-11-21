@@ -33,13 +33,11 @@ public class Yahoo {
 		for (Element element : elementsByClass) {
 			response += element.text();
 		}
-		if (response.length() < 2) {
-			Elements rightHand = document.getElementsByClass("compText");
-			for (Element element : rightHand) {
-				response += element.text();
-			}
-		}
-		System.err.println(response);
+		/*
+		 * if (response.length() < 2) { Elements rightHand =
+		 * document.getElementsByClass("compText"); for (Element element : rightHand) {
+		 * response += element.text(); } }
+		 */
 		try {
 			response = response.replaceAll("\\(" + ".*" + "\\)", "");
 		} catch (Exception e) {
@@ -51,6 +49,9 @@ public class Yahoo {
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.err.println("Yahoo search string shortening failed!");
+		}
+		if (response.equalsIgnoreCase("")) {
+			return null;
 		}
 		JsonArray contextOut = new JsonArray();
 		aiResponse.setContextOut(contextOut);

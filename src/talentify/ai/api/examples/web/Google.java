@@ -5,7 +5,6 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.util.Random;
 
-import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,7 +22,7 @@ public class Google {
 		String url = "https://www.google.com/search?q=" + q;
 		System.out.println("Connecting to URL >>" + url);
 		try {
-			Document document = Jsoup.connect(url).timeout(4000).userAgent("Mozilla/17.0").followRedirects(true)
+			Document document = Jsoup.connect(url).timeout(40000).userAgent("Mozilla/17.0").followRedirects(true)
 					.maxBodySize(1024 * 1024 * 3).get();
 			Elements elementsByClass = document.getElementsByClass("_Tgc");
 			String response = "";
@@ -45,6 +44,9 @@ public class Google {
 			} catch (Exception e) {
 				// TODO: handle exception
 				System.err.println("Google search string shortening failed!");
+			}
+			if (response.equalsIgnoreCase("")) {
+				return null;
 			}
 			JsonArray contextOut = new JsonArray();
 			aiResponse.setContextOut(contextOut);

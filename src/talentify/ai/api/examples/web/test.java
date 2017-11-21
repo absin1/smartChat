@@ -10,9 +10,36 @@ public class test {
 		// System.err.println(new TalentifyTask().getTaskExtraShort("777"));
 		// testGoogle();
 		// testBing();
-		//testYahoo();
-		testDuckDuckGo();
+		// testYahoo();
+		// testDuckDuckGo();
+		// checkWolframShort();
 		// checkRegEx();
+		checkOntologicalResponse();
+		// checkUltimateFallBack();
+	}
+
+	private static void checkUltimateFallBack() {
+		ApiAIResponse ultimateFallbackResponse = new SimpleChatServlet().getUltimateFallbackResponse();
+		System.err.println(ultimateFallbackResponse.getSource() + " >> " + ultimateFallbackResponse.getSpeech());
+	}
+
+	private static void checkOntologicalResponse() {
+		try {
+			ApiAIResponse ontologicalResponse = new SimpleChatServlet()
+					.getOntologicalResponse("how+far+is+delhi+from+jaipur");
+			System.err.println(ontologicalResponse.getSource() + " >> " + ontologicalResponse.getSpeech());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void checkWolframShort() throws IOException {
+		ArrayList<String> q = new ArrayList<>();
+		q.add("how+far+is+chennai+from+bangalore");
+		for (String string : q) {
+			ApiAIResponse wolframResponse = new WolframAlpha().getShortAnswer(string);
+			System.out.println(string + " >> " + wolframResponse.getSpeech() + "\n");
+		}
 	}
 
 	private static void testYahoo() throws IOException {

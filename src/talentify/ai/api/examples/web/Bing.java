@@ -14,7 +14,7 @@ public class Bing {
 		ApiAIResponse aiResponse = new ApiAIResponse();
 		String url = "https://www.bing.com/search?q=" + q;
 		System.out.println("Connecting to URL >>" + url);
-		Document document = Jsoup.connect(url).timeout(4000).userAgent("Mozilla/17.0").followRedirects(true)
+		Document document = Jsoup.connect(url).timeout(40000).userAgent("Mozilla/17.0").followRedirects(true)
 				.maxBodySize(1024 * 1024 * 3).get();
 		Elements elementsByClass = document.getElementsByClass("rwrl_padref");
 		String response = "";
@@ -27,7 +27,6 @@ public class Bing {
 				response += element.text();
 			}
 		}
-		System.err.println(response);
 		try {
 			response = response.replaceAll("\\(" + ".*" + "\\)", "");
 		} catch (Exception e) {
@@ -39,6 +38,9 @@ public class Bing {
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.err.println("Bing search string shortening failed!");
+		}
+		if (response.equalsIgnoreCase("")) {
+			return null;
 		}
 		JsonArray contextOut = new JsonArray();
 		aiResponse.setContextOut(contextOut);

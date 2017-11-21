@@ -71,7 +71,8 @@ public class SimpleChatServlet extends AIServiceServlet {
 				 * String googleResponse = new Utils().stringify(search);
 				 * System.err.println(googleResponse);
 				 */
-				speech += search.speech;
+				System.err.println(search.getSource() + " >> " + search.getSpeech());
+				speech += search.getSpeech();
 			} else {
 				System.out.println("Intent with no action > " + speech);
 			}
@@ -88,7 +89,7 @@ public class SimpleChatServlet extends AIServiceServlet {
 		}
 	}
 
-	private ApiAIResponse getOntologicalResponse(String resolvedQuery) throws IOException, JSONException {
+	public ApiAIResponse getOntologicalResponse(String resolvedQuery) throws IOException, JSONException {
 		ApiAIResponse search = new Google().search(resolvedQuery);
 		if (search == null) {
 			search = new DuckDuckGo().searchApache(resolvedQuery);
@@ -99,7 +100,24 @@ public class SimpleChatServlet extends AIServiceServlet {
 		if (search == null) {
 			search = new Yahoo().search(resolvedQuery);
 		}
+		if (search == null) {
+			search = new WolframAlpha().getShortAnswer(resolvedQuery);
+		}
+		if (search == null) {
+			search = getUltimateFallbackResponse();
+		}
 		return search;
+	}
+
+	public ApiAIResponse getUltimateFallbackResponse() {
+		String answer = new Bakchodi().getRandomWitty();
+		JsonArray contextOut = new JsonArray();
+		ApiAIResponse aiResponse = new ApiAIResponse();
+		aiResponse.setContextOut(contextOut);
+		aiResponse.setDisplayText(answer);
+		aiResponse.setSpeech(answer);
+		aiResponse.setSource("Random Movie Dialogue");
+		return aiResponse;
 	}
 
 	public String stringify(AIResponse aiResponse) {
